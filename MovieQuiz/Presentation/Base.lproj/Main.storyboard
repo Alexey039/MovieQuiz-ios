@@ -66,6 +66,9 @@
                                                         <integer key="value" value="15"/>
                                                     </userDefinedRuntimeAttribute>
                                                 </userDefinedRuntimeAttributes>
+                                                <connections>
+                                                    <action selector="noButtonClicked:" destination="BYZ-38-t0r" eventType="touchUpInside" id="dzx-kJ-jso"/>
+                                                </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8gA-eX-Kep" userLabel="Yes button">
                                                 <rect key="frame" x="197" y="0.0" width="177" height="60"/>
@@ -80,6 +83,9 @@
                                                         <integer key="value" value="15"/>
                                                     </userDefinedRuntimeAttribute>
                                                 </userDefinedRuntimeAttributes>
+                                                <connections>
+                                                    <action selector="yesButtonClicked:" destination="BYZ-38-t0r" eventType="touchUpInside" id="kO6-U6-8ja"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                         <constraints>
@@ -106,6 +112,11 @@
                             <constraint firstItem="Mlm-GA-AnG" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="rbZ-8E-Fht"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="counterLabel" destination="EEL-xM-2ZV" id="0dC-if-o9Y"/>
+                        <outlet property="imageView" destination="gzc-BY-iH7" id="Mtz-yi-sI1"/>
+                        <outlet property="textLabel" destination="EEL-xM-2ZV" id="iSW-bU-IKg"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
