@@ -86,6 +86,7 @@ final class MovieQuizViewController: UIViewController {
       imageView.image = step.image
       textLabel.text = step.question
       counterLabel.text = step.questionNumber
+        
     }
     
     override func viewDidLoad() {
@@ -102,8 +103,30 @@ final class MovieQuizViewController: UIViewController {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        
+        // запускаем задачу через 1 секунду c помощью диспетчера задач
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+           // код, который мы хотим вызвать через 1 секунду
+           self.showNextQuestionOrResults()
+        }
     }
     
+    //метод, который содержит логику перехода в один из сценариев
+    
+    private func showNextQuestionOrResults() {
+        if currentQuestionIndex == question.count - 1 {
+            
+        } else {
+            currentQuestionIndex += 1
+            
+            let nextQuestion = question[currentQuestionIndex]
+            let viewModel = convert(model: nextQuestion)
+            
+            show(quiz: viewModel)
+        }
+    }
+    
+   
     
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textLabel: UILabel!
