@@ -71,7 +71,7 @@ final class MovieQuizViewController: UIViewController {
     
     // переменная со счетчиком правильных ответов, начально значение закономерно 0
     private var correctAnswers = 0
-    
+    //123
     
     //метод конвертации, который принимает моковый вопрос и возвращает вью модель для экрана вопроса
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
@@ -92,7 +92,11 @@ final class MovieQuizViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        counterLabel.font = UIFont(name: "YS Display-Medium", size: 20)
+//        for family in UIFont.familyNames.sorted() {
+//            let names = UIFont.fontNames(forFamilyName: family)
+//            print("Family: \(family) Font names \(names)")
+//        }
         // берём текущий вопрос из массива вопросов по индексу текущего вопроса
         let currentQuestion = question[currentQuestionIndex]
         show(quiz: convert(model: currentQuestion))
@@ -201,3 +205,5 @@ final class MovieQuizViewController: UIViewController {
         
     }
 }
+
+
