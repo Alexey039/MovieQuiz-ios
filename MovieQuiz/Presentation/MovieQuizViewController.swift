@@ -35,33 +35,34 @@ final class MovieQuizViewController: UIViewController {
     
     private let question: [QuizQuestion] = [
         QuizQuestion(image: "The Godfather",
-                     text: "9,2",
+                     text: "Рейтинг этого фильма больше чем 6?",
                      correctAnswer: true),
         QuizQuestion(image: "The Dark Knight",
-                     text: "9",
+                     text: "Рейтинг этого фильма больше чем 6?",
                      correctAnswer: true),
         QuizQuestion(image: "Kill Bill",
-                     text: "8,1",
+                     text: "Рейтинг этого фильма больше чем 6?",
                      correctAnswer: true),
         QuizQuestion(image: "The Avengers",
-                     text: "8", correctAnswer: true),
+                     text: "Рейтинг этого фильма больше чем 6?",
+                     correctAnswer: true),
         QuizQuestion(image: "Deadpool",
-                     text: "8",
+                     text: "Рейтинг этого фильма больше чем 6?",
                      correctAnswer: true),
         QuizQuestion(image: "The Green Knight",
-                     text: "6,6",
+                     text: "Рейтинг этого фильма больше чем 6?",
                      correctAnswer: true),
         QuizQuestion(image: "Old",
-                     text: "5,8",
+                     text: "Рейтинг этого фильма больше чем 6?",
                      correctAnswer: false),
         QuizQuestion(image: "The Ice Age Adventures of Buck Wild",
-                     text: "4,3",
+                     text: "Рейтинг этого фильма больше чем 6?",
                      correctAnswer: false),
         QuizQuestion(image: "Tesla",
-                     text: "5,1",
+                     text: "Рейтинг этого фильма больше чем 6?",
                      correctAnswer: false),
         QuizQuestion(image: "Vivarium",
-                     text: "5,8",
+                     text: "Рейтинг этого фильма больше чем 6?",
                      correctAnswer: false)
     ]
     
@@ -92,12 +93,12 @@ final class MovieQuizViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        questionTitleLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
+        counterLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
         textLabel.font = UIFont(name: "YSDisplay-Bold", size: 23)
-        
-        for family in UIFont.familyNames.sorted() {
-            let names = UIFont.fontNames(forFamilyName: family)
-            print("Family: \(family) Font names \(names)")
-        }
+        noButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
+        yesButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
+
         // берём текущий вопрос из массива вопросов по индексу текущего вопроса
         let currentQuestion = question[currentQuestionIndex]
         
@@ -192,8 +193,13 @@ final class MovieQuizViewController: UIViewController {
     
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textLabel: UILabel!
-    @IBOutlet private weak var counterLabel: UILabel!
-   
+    @IBOutlet private var counterLabel: UILabel!
+    @IBOutlet private var questionTitleLabel: UILabel!
+    
+    
+    @IBOutlet private var noButton: UIButton!
+    @IBOutlet private var yesButton: UIButton!
+    
     // метод вызывается, когда пользователь нажимает на кнопку "Да"
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
         let currentQuestion = question[currentQuestionIndex]
