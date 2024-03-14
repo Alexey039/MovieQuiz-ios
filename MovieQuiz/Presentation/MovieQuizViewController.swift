@@ -184,6 +184,10 @@ final class MovieQuizViewController: UIViewController {
             let firstQuestion = self.question[self.currentQuestionIndex]
             let viewModel = self.convert(model: firstQuestion)
             self.show(quiz: viewModel)
+            
+            self.imageView.layer.masksToBounds = true
+            self.imageView.layer.borderWidth = 0
+            self.imageView.layer.cornerRadius = 6
         }
         
         alert.addAction(action)
