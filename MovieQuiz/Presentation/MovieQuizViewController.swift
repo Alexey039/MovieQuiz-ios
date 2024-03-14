@@ -166,6 +166,9 @@ final class MovieQuizViewController: UIViewController {
             imageView.layer.masksToBounds = true
             imageView.layer.borderWidth = 0
             imageView.layer.cornerRadius = 6
+            
+            noButton.isEnabled = true
+            yesButton.isEnabled = true
         }
     }
     
@@ -188,6 +191,9 @@ final class MovieQuizViewController: UIViewController {
             self.imageView.layer.masksToBounds = true
             self.imageView.layer.borderWidth = 0
             self.imageView.layer.cornerRadius = 6
+            
+            self.noButton.isEnabled = true
+            self.yesButton.isEnabled = true
         }
         
         alert.addAction(action)
@@ -209,6 +215,9 @@ final class MovieQuizViewController: UIViewController {
         let currentQuestion = question[currentQuestionIndex]
         let givenAnswer = true
         
+        noButton.isEnabled = false
+        yesButton.isEnabled = false
+        
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
@@ -217,7 +226,9 @@ final class MovieQuizViewController: UIViewController {
         let currentQuestion = question[currentQuestionIndex]
         let givenAnswer = false
         
-//        yesButton.isEnabled = false
+        noButton.isEnabled = false
+        yesButton.isEnabled = false
+        
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
         
     }
