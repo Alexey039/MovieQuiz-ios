@@ -3,27 +3,27 @@ import UIKit
 final class MovieQuizViewController: UIViewController {
     
     
-  private  struct ViewModel {
+    private  struct ViewModel {
         let image: UIImage
         let question: String
         let questionNumber: String
     }
     
     // для состояния  "Вопрос показан"
-  private  struct QuizStepViewModel {
+    private  struct QuizStepViewModel {
         let image: UIImage
         let question: String
         let questionNumber: String
     }
     
     // для состояния "Результат квиза"
-   private struct QuizResultsViewModel {
+    private struct QuizResultsViewModel {
         let title: String
         let text: String
         let buttonText: String
     }
     
-   private struct QuizQuestion {
+    private struct QuizQuestion {
         // строка с названием фильма.
         // совпадает с название картинки афиши фильма в Assets
         let image: String
@@ -98,7 +98,7 @@ final class MovieQuizViewController: UIViewController {
         textLabel.font = UIFont(name: "YSDisplay-Bold", size: 23)
         noButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
         yesButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
-
+        
         // берём текущий вопрос из массива вопросов по индексу текущего вопроса
         let currentQuestion = question[currentQuestionIndex]
         
@@ -165,7 +165,7 @@ final class MovieQuizViewController: UIViewController {
             
             imageView.layer.masksToBounds = true
             imageView.layer.borderWidth = 0
-            imageView.layer.cornerRadius = 6
+            imageView.layer.cornerRadius = 20
             
             noButton.isEnabled = true
             yesButton.isEnabled = true
@@ -190,7 +190,7 @@ final class MovieQuizViewController: UIViewController {
             
             self.imageView.layer.masksToBounds = true
             self.imageView.layer.borderWidth = 0
-            self.imageView.layer.cornerRadius = 6
+            self.imageView.layer.cornerRadius = 20
             
             self.noButton.isEnabled = true
             self.yesButton.isEnabled = true
