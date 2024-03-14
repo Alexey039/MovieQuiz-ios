@@ -3,27 +3,27 @@ import UIKit
 final class MovieQuizViewController: UIViewController {
     
     
-    struct ViewModel {
+  private  struct ViewModel {
         let image: UIImage
         let question: String
         let questionNumber: String
     }
     
     // для состояния  "Вопрос показан"
-    struct QuizStepViewModel {
+  private  struct QuizStepViewModel {
         let image: UIImage
         let question: String
         let questionNumber: String
     }
     
     // для состояния "Результат квиза"
-    struct QuizResultsViewModel {
+   private struct QuizResultsViewModel {
         let title: String
         let text: String
         let buttonText: String
     }
     
-    struct QuizQuestion {
+   private struct QuizQuestion {
         // строка с названием фильма.
         // совпадает с название картинки афиши фильма в Assets
         let image: String
@@ -92,13 +92,15 @@ final class MovieQuizViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        counterLabel.font = UIFont(name: "YS Display-Medium", size: 20)
-//        for family in UIFont.familyNames.sorted() {
-//            let names = UIFont.fontNames(forFamilyName: family)
-//            print("Family: \(family) Font names \(names)")
-//        }
+        textLabel.font = UIFont(name: "YSDisplay-Bold", size: 23)
+        
+        for family in UIFont.familyNames.sorted() {
+            let names = UIFont.fontNames(forFamilyName: family)
+            print("Family: \(family) Font names \(names)")
+        }
         // берём текущий вопрос из массива вопросов по индексу текущего вопроса
         let currentQuestion = question[currentQuestionIndex]
+        
         show(quiz: convert(model: currentQuestion))
     }
     
@@ -159,6 +161,10 @@ final class MovieQuizViewController: UIViewController {
             let viewModel = convert(model: nextQuestion)
             
             show(quiz: viewModel)
+            
+            imageView.layer.masksToBounds = true
+            imageView.layer.borderWidth = 0
+            imageView.layer.cornerRadius = 6
         }
     }
     
@@ -186,10 +192,10 @@ final class MovieQuizViewController: UIViewController {
     
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textLabel: UILabel!
-    @IBOutlet private var counterLabel: UILabel!
-    
+    @IBOutlet private weak var counterLabel: UILabel!
+   
     // метод вызывается, когда пользователь нажимает на кнопку "Да"
-    @IBAction private func yesButtonClicked(_ sender: Any) {
+    @IBAction private func yesButtonClicked(_ sender: UIButton) {
         let currentQuestion = question[currentQuestionIndex]
         let givenAnswer = true
         
@@ -197,10 +203,11 @@ final class MovieQuizViewController: UIViewController {
     }
     
     // метод вызывается, когда пользователь нажимает на кнопку "Нет"
-    @IBAction private func noButtonClicked(_ sender: Any) {
+    @IBAction private func noButtonClicked(_ sender: UIButton ) {
         let currentQuestion = question[currentQuestionIndex]
         let givenAnswer = false
         
+//        yesButton.isEnabled = false
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
         
     }
