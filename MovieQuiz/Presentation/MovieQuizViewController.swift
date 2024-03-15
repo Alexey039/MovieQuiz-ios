@@ -93,11 +93,11 @@ final class MovieQuizViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        questionTitleLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
-        counterLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
-        textLabel.font = UIFont(name: "YSDisplay-Bold", size: 23)
-        noButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
-        yesButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
+//        questionTitleLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
+//        counterLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
+//        textLabel.font = UIFont(name: "YSDisplay-Bold", size: 23)
+//        noButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
+//        yesButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
         
         // берём текущий вопрос из массива вопросов по индексу текущего вопроса
         let currentQuestion = question[currentQuestionIndex]
