@@ -93,15 +93,10 @@ final class MovieQuizViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        questionTitleLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
-//        counterLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
-//        textLabel.font = UIFont(name: "YSDisplay-Bold", size: 23)
-//        noButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
-//        yesButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
-        
         // берём текущий вопрос из массива вопросов по индексу текущего вопроса
         let currentQuestion = question[currentQuestionIndex]
         
+        setupView()
         show(quiz: convert(model: currentQuestion))
     }
     
@@ -201,6 +196,19 @@ final class MovieQuizViewController: UIViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
+    private func setupView() {
+        questionTitleLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
+        counterLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
+        textLabel.font = UIFont(name: "YSDisplay-Bold", size: 23)
+        noButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
+        yesButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
+    }
+    
+    private func changeStateButton(isEnabled: Bool){
+        noButton.isEnabled = false
+        yesButton.isEnabled = false
+    }
+    
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textLabel: UILabel!
     @IBOutlet private var counterLabel: UILabel!
@@ -215,9 +223,7 @@ final class MovieQuizViewController: UIViewController {
         let currentQuestion = question[currentQuestionIndex]
         let givenAnswer = true
         
-        noButton.isEnabled = false
-        yesButton.isEnabled = false
-        
+        changeStateButton(isEnabled: false)
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
@@ -226,9 +232,8 @@ final class MovieQuizViewController: UIViewController {
         let currentQuestion = question[currentQuestionIndex]
         let givenAnswer = false
         
-        noButton.isEnabled = false
-        yesButton.isEnabled = false
-        
+
+        changeStateButton(isEnabled: false)
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
         
     }
