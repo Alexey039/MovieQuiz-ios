@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController {
+final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     
     private  struct ViewModel {
@@ -8,14 +8,16 @@ final class MovieQuizViewController: UIViewController {
         let question: String
         let questionNumber: String
     }
- 
+    
     //переменная с индексом текущего вопроса, начальное значение 0
     // (по этому индексу будем искать вопрос в массиве, где индекс первого элемента 0, а не 1)
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
     private let questionsAmount: Int = 10
-    private var questionFactory: QuestionFactory = QuestionFactory()
+    private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
+    private var alertPresenter: AlertPresenter?
+    private var statisticService: StatisticService?
     
     //метод конвертации, который принимает моковый вопрос и возвращает вью модель для экрана вопроса
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
@@ -36,14 +38,29 @@ final class MovieQuizViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // берём текущий вопрос из массива вопросов по индексу текущего вопроса
-        if let firstQuestion = questionFactory.requestNextQuestion() {
-            currentQuestion = firstQuestion
-            let viewModel = convert(model: firstQuestion)
-            show(quiz: viewModel)
+        statisticService = StatisticServiceImplementation()
+        let questionFactory = QuestionFactory()
+        questionFactory.delegate = self
+        self.questionFactory = questionFactory
+        
+        questionFactory.requestNextQuestion()
+        alertPresenter = AlertPresenter(viewController: self)
+        setupView()
+    }
+    
+    // MARK: - QuestionFactoryDelegate
+    
+    func didReceiveNextQuestion(question: QuizQuestion?) {
+        guard let question = question else {
+            return
         }
         
-        setupView()
+        currentQuestion = question
+        let viewModel = convert(model: question)
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.show(quiz: viewModel)
+        }
     }
     
     // приватный метод, который меняет цвет рамки
@@ -66,57 +83,17 @@ final class MovieQuizViewController: UIViewController {
     }
     
     //метод, который содержит логику перехода в один из сценариев
-    
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questionsAmount - 1 {
-            // константа с кнопкой для системного алерта
-            let text = correctAnswers == questionsAmount ?
-            "Поздравляем, вы ответили на 10 из 10!" :
-            "Вы ответили на \(correctAnswers) из 10, попробуйте ещё раз!"
-            let viewModel = QuizResultsViewModel(
-                title: "Этот раунд окончен!",
-                text: text,
-                buttonText: "Сыграть ещё раз")
-            show(quiz: viewModel)
+            showFinalResults()
             
-            let alert = UIAlertController(
-                title: "Этот раунд окончен!",
-                message: "Ваш результат ???",
-                preferredStyle: .alert)
-            
-            let action = UIAlertAction(title: "Сыграть еще раз", style: .default) { [weak self] _ in
-                guard let self = self else { return }
-                
-                self.currentQuestionIndex = 0
-                self.correctAnswers = 0
-                
-                if let firstQuestion = self.questionFactory.requestNextQuestion() {
-                    self.currentQuestion = firstQuestion
-                    let viewModel = self.convert(model: firstQuestion)
-
-                    self.show(quiz: viewModel)
-                }
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 ) {
-                self.showNextQuestionOrResults()
-            }
-            
-            alert.addAction(action)
-            
-            self.present(alert, animated: true, completion: nil)
-            
-            
-            
-        } else {
+            noButton.isEnabled = true
+            yesButton.isEnabled = true
+        }
+        else {
             currentQuestionIndex += 1
             
-            if let nextQuestion = questionFactory.requestNextQuestion() {
-                currentQuestion = nextQuestion
-                let viewModel = convert(model: nextQuestion)
-
-                show(quiz: viewModel)
-            } 
+            self.questionFactory?.requestNextQuestion()
             
             imageView.layer.masksToBounds = true
             imageView.layer.borderWidth = 0
@@ -127,35 +104,42 @@ final class MovieQuizViewController: UIViewController {
         }
     }
     
-    // приватный метод для показа результатов раунда квиза
-    // принимает вью модель QuizResultsViewModel и ничего не возвращает
+    private func showFinalResults() {
+        statisticService?.store(correct: correctAnswers, total: questionsAmount)
+        let alertModel = AlertModel(
+            title: "Этот раунд окончен!",
+            message: getResultMessage(),
+            buttonText: "Сыграть ещё раз",
+            completion: { [weak self] in
+                self?.currentQuestionIndex = 0
+                self?.correctAnswers = 0
+                self?.questionFactory?.requestNextQuestion()
+            }
+        )
+        alertPresenter?.show(alertModel: alertModel)
+    }
+
     private func show(quiz result: QuizResultsViewModel) {
         let alert = UIAlertController(
             title: result.title,
             message: result.text,
             preferredStyle: .alert)
-        
+
         let action = UIAlertAction(title: result.buttonText, style: .default) { _ in
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
-            
-            if let firstQuestion = self.questionFactory.requestNextQuestion() {
-                self.currentQuestion = firstQuestion
-                let viewModel = self.convert(model: firstQuestion)
+            self.questionFactory?.requestNextQuestion()
 
-                self.show(quiz: viewModel)
-            }
-            
             self.imageView.layer.masksToBounds = true
             self.imageView.layer.borderWidth = 0
             self.imageView.layer.cornerRadius = 20
-            
+
             self.noButton.isEnabled = true
             self.yesButton.isEnabled = true
         }
-        
+
         alert.addAction(action)
-        
+
         self.present(alert, animated: true, completion: nil)
     }
     
@@ -166,6 +150,20 @@ final class MovieQuizViewController: UIViewController {
         noButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
         yesButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
     }
+    
+    private func getResultMessage() -> String {
+        guard let bestGame = statisticService?.bestGame else {
+            assertionFailure("error")
+            return ""
+        }
+        let totalPlaysQuizCount = "Количество сыгранных квизов: \(statisticService!.gamesCount)"
+        let currentQuizResult = "Ваш результат: \(correctAnswers)\\\(questionsAmount)"
+        let bestQuizInfo = "Рекорд: \(bestGame.correct)\\\(bestGame.total)" + "(\(bestGame.date.dateTimeString))"
+        let averageAccuracyAllQuiz = "Средняя точность: \(String(format: "%.2f", statisticService!.totalAccuracy))%"
+        let resultMessage = [currentQuizResult, totalPlaysQuizCount, bestQuizInfo, averageAccuracyAllQuiz].joined(separator: "\n")
+        return resultMessage
+    }
+
     
     private func changeStateButton(isEnabled: Bool){
         noButton.isEnabled = false
@@ -194,13 +192,12 @@ final class MovieQuizViewController: UIViewController {
     
     // метод вызывается, когда пользователь нажимает на кнопку "Нет"
     @IBAction private func noButtonClicked(_ sender: UIButton ) {
-//        let currentQuestion = question[currentQuestionIndex]
         guard let currentQuestion = currentQuestion else {
             return
-        } 
+        }
         let givenAnswer = false
         
-
+        
         changeStateButton(isEnabled: false)
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
         
