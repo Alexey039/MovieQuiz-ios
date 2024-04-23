@@ -2,6 +2,15 @@ import UIKit
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
+    @IBOutlet private var imageView: UIImageView!
+    @IBOutlet private var textLabel: UILabel!
+    @IBOutlet private var counterLabel: UILabel!
+    @IBOutlet private var questionTitleLabel: UILabel!
+
+
+    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet private var noButton: UIButton!
+    @IBOutlet private var yesButton: UIButton!
     
     private  struct ViewModel {
         let image: UIImage
@@ -22,7 +31,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     //метод конвертации, который принимает моковый вопрос и возвращает вью модель для экрана вопроса
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         let questionStep = QuizStepViewModel(
-            image: UIImage(named: model.image) ?? UIImage(),
+            image: UIImage(data: model.image) ?? UIImage(),
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
         return questionStep
@@ -38,12 +47,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        statisticService = StatisticServiceImplementation()
-        let questionFactory = QuestionFactory()
-        questionFactory.delegate = self
-        self.questionFactory = questionFactory
         
-        questionFactory.requestNextQuestion()
+        statisticService = StatisticServiceImplementation()
+       
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+       
+//        self.questionFactory = questionFactory
+        
+        showLoadingIndicator()
+        questionFactory?.loadData()
+        questionFactory?.requestNextQuestion()
         alertPresenter = AlertPresenter(viewController: self)
         setupView()
     }
@@ -87,20 +100,22 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         if currentQuestionIndex == questionsAmount - 1 {
             showFinalResults()
             
-            noButton.isEnabled = true
-            yesButton.isEnabled = true
+            changeStateButton(isEnabled: true)
+            
+            imageView.layer.masksToBounds = true
+            imageView.layer.borderWidth = 0
+            imageView.layer.cornerRadius = 20
         }
         else {
             currentQuestionIndex += 1
             
             self.questionFactory?.requestNextQuestion()
-            
+             
             imageView.layer.masksToBounds = true
             imageView.layer.borderWidth = 0
             imageView.layer.cornerRadius = 20
             
-            noButton.isEnabled = true
-            yesButton.isEnabled = true
+            changeStateButton(isEnabled: true)
         }
     }
     
@@ -130,12 +145,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             self.correctAnswers = 0
             self.questionFactory?.requestNextQuestion()
 
-            self.imageView.layer.masksToBounds = true
-            self.imageView.layer.borderWidth = 0
-            self.imageView.layer.cornerRadius = 20
-
-            self.noButton.isEnabled = true
-            self.yesButton.isEnabled = true
+            self.changeStateButton(isEnabled: true)
         }
 
         alert.addAction(action)
@@ -166,18 +176,46 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
 
     
     private func changeStateButton(isEnabled: Bool){
-        noButton.isEnabled = false
-        yesButton.isEnabled = false
+        noButton.isEnabled = isEnabled
+        yesButton.isEnabled = isEnabled
     }
     
-    @IBOutlet private var imageView: UIImageView!
-    @IBOutlet private var textLabel: UILabel!
-    @IBOutlet private var counterLabel: UILabel!
-    @IBOutlet private var questionTitleLabel: UILabel!
+    private func showLoadingIndicator() {
+        activityIndicator.isHidden = false // говорим, что индикатор загрузки не скрыт
+        activityIndicator.startAnimating() // включаем анимацию
+    }
     
+    private func showNetworkError(message: String) {
+        hideLoadingIndicator()
+        
+        let model = AlertModel(title: "Ошибка",
+                               message: message,
+                               buttonText: "Попробовать еще раз") { [weak self] in
+            guard let self = self else { return }
+            
+            self.currentQuestionIndex = 0
+            self.correctAnswers = 0
+            
+            self.questionFactory?.requestNextQuestion()
+        }
+        
+        alertPresenter?.show(alertModel: model)
+    }
     
-    @IBOutlet private var noButton: UIButton!
-    @IBOutlet private var yesButton: UIButton!
+    func didFailToLoadData(with error: Error) {
+        showNetworkError(message: error.localizedDescription)
+    }
+    
+    func didLoadDataFromServer() {
+        activityIndicator.isHidden = true
+        questionFactory?.requestNextQuestion()
+    }
+    
+    private func hideLoadingIndicator() {
+         activityIndicator.isHidden = true
+     }
+    
+
     
     // метод вызывается, когда пользователь нажимает на кнопку "Да"
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
