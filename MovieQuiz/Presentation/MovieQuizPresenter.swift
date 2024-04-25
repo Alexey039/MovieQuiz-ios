@@ -29,10 +29,6 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         questionFactory?.requestNextQuestion()
     }
     
-    
-    
-    
-    
     func isLastQuestion() -> Bool {
         questionsAmount == currentQuestionIndex + 1
     }
@@ -148,7 +144,5 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         
         return resultMessage
     }
-    
-    
 }
 
