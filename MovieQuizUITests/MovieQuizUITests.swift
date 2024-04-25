@@ -54,43 +54,48 @@ final class MovieQuizUITests: XCTestCase {
         
         let secondPoster = app.images["Poster"]
         let secondPosterData = secondPoster.screenshot().pngRepresentation
-
+        
         let indexLabel = app.staticTexts["Index"]
-       
+        
         XCTAssertNotEqual(firstPosterData, secondPosterData)
         XCTAssertEqual(indexLabel.label, "2/10")
     }
     
-    func testGameFinish() {
+    func testResultsAlert() {
         sleep(2)
         for _ in 1...10 {
             app.buttons["No"].tap()
             sleep(2)
         }
-
+        
         let alert = app.alerts["Game results"]
+        sleep(3)
         
         XCTAssertTrue(alert.exists)
         XCTAssertTrue(alert.label == "Этот раунд окончен!")
         XCTAssertTrue(alert.buttons.firstMatch.label == "Сыграть ещё раз")
     }
-
-//    func testAlertDismiss() {
-//        sleep(2)
-//        for _ in 1...10 {
-//            app.buttons["No"].tap()
-//            sleep(2)
-//        }
-//
-//        let alert = app.alerts["Game results"]
-//        alert.buttons.firstMatch.tap()
-//
-//        sleep(2)
-//
-//        let indexLabel = app.staticTexts["Index"]
-//
-//        XCTAssertFalse(alert.exists)
-//        XCTAssertTrue(indexLabel.label == "1/10")
-//    }
+    
+    func testAlertButton() {
+        sleep(3)
+        
+        let alert = app.alerts["Game results"]
+        let indexLabel = app.staticTexts["Index"]
+        
+        for _ in 1...10 {
+            sleep(3)
+            app.buttons["No"].tap()
+        }
+        
+        sleep(3)
+        
+        let buttonToTap = alert.buttons.firstMatch
+        XCTAssertTrue(buttonToTap.exists)
+        buttonToTap.tap()
+        
+        sleep(3)
+        
+        XCTAssertFalse(alert.exists)
+        XCTAssertEqual(indexLabel.label, "1/10")
+    }
 }
-
