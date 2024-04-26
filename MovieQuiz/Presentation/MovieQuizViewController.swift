@@ -9,13 +9,12 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     @IBOutlet private var activityIndicator: UIActivityIndicatorView!
     @IBOutlet private var noButton: UIButton!
     @IBOutlet private var yesButton: UIButton!
-   
+    
     private var presenter: MovieQuizPresenter!
     private var currentQuestion: QuizQuestion?
     private var alertPresenter: AlertPresenter?
     private var statisticService: StatisticService?
     
-    //приватный метод вывода на экран вопроса, который принимает на вход вью модель вопроса и ничего не возвращает
     func show(quiz step: QuizStepViewModel) {
         imageView.image = step.image
         textLabel.text = step.question
@@ -28,13 +27,13 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         
         statisticService = StatisticServiceImplementation()
         presenter = MovieQuizPresenter(viewController: self)
-
+        
         showLoadingIndicator()
-
+        
         alertPresenter = AlertPresenter(viewController: self)
         setupView()
     }
-
+    
     func show(quiz result: QuizResultsViewModel) {
         let message = presenter.makeResultsMessage()
         
@@ -46,9 +45,9 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         alert.view.accessibilityIdentifier = "Game results"
         
         let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in
-                guard let self = self else { return }
-                
-                self.presenter.restartGame()
+            guard let self = self else { return }
+            
+            self.presenter.restartGame()
             
             self.changeStateButton(isEnabled: true)
         }
@@ -65,15 +64,15 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         noButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
         yesButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
     }
-
+    
     func changeStateButton(isEnabled: Bool){
         noButton.isEnabled = isEnabled
         yesButton.isEnabled = isEnabled
     }
     
-   func showLoadingIndicator() {
-        activityIndicator.isHidden = false // говорим, что индикатор загрузки не скрыт
-        activityIndicator.startAnimating() // включаем анимацию
+    func showLoadingIndicator() {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
     }
     
     func showNetworkError(message: String) {
@@ -84,9 +83,9 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
                                buttonText: "Попробовать еще раз") { [weak self] in
             guard let self = self else { return }
             
-
+            
             self.presenter.restartGame()
-
+            
         }
         
         alertPresenter?.show(alertModel: model)
@@ -97,25 +96,23 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     }
     
     func highlightImageBorder(isCorrectAnswer: Bool) {
-           imageView.layer.masksToBounds = true
-           imageView.layer.borderWidth = 8
-           imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-       }
+        imageView.layer.masksToBounds = true
+        imageView.layer.borderWidth = 8
+        imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+    }
     
     func removeHighlightImageBorder() {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 0
         imageView.layer.cornerRadius = 20
     }
-    
-    // метод вызывается, когда пользователь нажимает на кнопку "Да"
+
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
         presenter.yesButtonClicked()
         
         changeStateButton(isEnabled: false)
     }
     
-    // метод вызывается, когда пользователь нажимает на кнопку "Нет"
     @IBAction private func noButtonClicked(_ sender: UIButton ) {
         presenter.noButtonClicked()
         

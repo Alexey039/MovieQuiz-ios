@@ -26,20 +26,20 @@ final class MovieQuizUITests: XCTestCase {
         
         sleep(3)
         
-        let firstPoster = app.images["Poster"] // находим первоначальный постер
+        let firstPoster = app.images["Poster"]
         
-        app.buttons["Yes"].tap() // находим кнопку `Да` и нажимаем её
+        app.buttons["Yes"].tap()
         
         sleep(3)
         
-        let secondPoster = app.images["Poster"] // ещё раз находим постер
+        let secondPoster = app.images["Poster"]
         
         let firstPosterData = firstPoster.screenshot().pngRepresentation
         let secondPosterData = secondPoster.screenshot().pngRepresentation
         
         let indexLabel = app.staticTexts["Index"]
         
-        XCTAssertFalse(firstPoster == secondPoster) // проверяем, что постеры разные
+        XCTAssertFalse(firstPosterData == secondPosterData)
         XCTAssertEqual(indexLabel.label, "2/10")
     }
     
